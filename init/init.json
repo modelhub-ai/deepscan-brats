@@ -1,0 +1,7 @@
+{
+  "docker_id": "cberger/pytorch-modelhub-cpu:1",
+  "external_contrib_files": [
+    {
+    }
+  ]
+}

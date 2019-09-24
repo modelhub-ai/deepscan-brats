@@ -1,0 +1,38 @@
+FROM nvidia/cuda:8.0-runtime-ubuntu16.04
+ARG PYTHON_VERSION=3.6
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-dev \
+    python3-pip \
+    python-dipy \
+    vim \
+    build-essential \
+    cmake \
+    curl \
+    git \
+    libgoogle-glog-dev \
+    libprotobuf-dev \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    python-tk \
+    libfontconfig1 \
+    libxrender1 \
+    protobuf-compiler \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel
+RUN pip3 install --no-cache-dir future hypothesis \
+        h5py==2.8.0 \
+        matplotlib==2.2.3 \
+        numpy==1.15.1 \
+        scipy==1.1.0 \
+        Pillow==5.2.0 \
+        scikit-learn==0.19.1 \
+        scikit-image==0.14.0 \
+        opencv-python \
+        torch==0.3.1 \
+        nibabel==2.3.0 \
+        dipy==0.14.0
