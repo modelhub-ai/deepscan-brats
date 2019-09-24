@@ -1,7 +1,13 @@
 {
-  "docker_id": "cberger/pytorch-modelhub-cpu:1",
+  "docker_id": "modelhub/pytorch-modelhub-gpu:2",
   "external_contrib_files": [
     {
+      "src_url": "https://github.com/modelhub-ai/deepscan-brats/releases/download/v0.1/checkpoint_2.pth.tar",
+      "dest_file_path": "/contrib_src/model/checkpoint_2.pth.tar"
+    },
+    {
+      "src_url": "https://github.com/modelhub-ai/deepscan-brats/releases/download/v0.1/checkpoint.pth.tar",
+      "dest_file_path": "/contrib_src/model/checkpoint.pth.tar"
     }
   ]
 }
