@@ -821,39 +821,20 @@ def load_checkpoint(net, checkpoint_file):
             checkpoint = torch.load(checkpoint_file)
             net.load_state_dict(checkpoint['state_dict'])
 
+def segment(flair, t1, t2, t1c, net1, net2):
+    assert(isinstance(flair, nib.nifti1.Nifti1Image))
+    flair_imgs = []
+    t2_imgs = []
+    t1ce_imgs = []
+    t1_imgs = []
+    flair_imgs.append(flair)
+    t2_imgs.append(t2)
+    t1_imgs.append(t1)
+    t1ce_imgs.append(t1c)
 
-net1 = UNET_3D_to_2D(0,channels_in=4,channels=128, growth_rate =12, dilated_layers=[6,6,6,6], output_channels=len(target_label_names))
-net2 = UNET_3D_to_2D(1,channels_in=4,channels=128, growth_rate =12, dilated_layers=[6,6,6], output_channels=len(target_label_names))
-
-net1 = net1.cuda()
-net2 = net2.cuda()
-load_checkpoint(net1, 'checkpoint.pth.tar')
-load_checkpoint(net2, 'checkpoint_2.pth.tar')
-
-flair_filepaths = ["/data/flair.nii.gz"]
-
-
-t1_filepaths = ["/data/t1.nii.gz"]
-
-
-t2_filepaths = ["/data/t2.nii.gz"]
-
-t1ce_filepaths = ["/data/t1ce.nii.gz"]
-
-def infer(flair_filepaths, t1_filepaths, t2_filepaths, t1ce_filepaths):
-
-    flair_imgs = [nib.load(x) for x in flair_filepaths]
     flair_data = [x.get_data().astype(np.float32) for x in flair_imgs]
-
-    t1_imgs = [nib.load(x) for x  in t1_filepaths]
     t1_data = [x.get_data().astype(np.float32) for x in t1_imgs]
-
-
-
-    t2_imgs = [nib.load(x) for x in  t2_filepaths]
     t2_data = [x.get_data() for x  in t2_imgs]
-
-    t1ce_imgs = [nib.load(x) for x in t1ce_filepaths]
     t1ce_data = [x.get_data() for x in t1ce_imgs]
 
     case=0
@@ -923,14 +904,6 @@ def infer(flair_filepaths, t1_filepaths, t2_filepaths, t1ce_filepaths):
     full_logit = (full_logit_0 + full_logit_1 + full_logit_2+full_logit_3 + full_logit_4 + full_logit_5)/6
 
 
-
-
-    flair = nib.load(flair_filepaths[case])
-    header = flair.header
-    affine = flair.affine
-
-
-
     seg_var_ensemble = numpy.any(numpy.stack([weighted_logit[4]>0, weighted_logit[3]>0, weighted_logit[2]>0,weighted_logit[1]>0, full_logit[0]>0]), axis = 0)
     seg_var_ensemble = seg_var_ensemble*5
     edema = numpy.any(numpy.stack([weighted_logit[3]>0, weighted_logit[2]>0,weighted_logit[1]>0, weighted_logit[0]>0]), axis = 0)
@@ -940,36 +913,10 @@ def infer(flair_filepaths, t1_filepaths, t2_filepaths, t1ce_filepaths):
     enhancing = np.logical_and(weighted_logit[1]>weighted_logit[0], core)
     seg_var_ensemble[enhancing] = 4
 
-    seg_var_nifti = nib.Nifti1Image(seg_var_ensemble, affine, header)
-    #nib.save(seg_var_nifti, cases[case]+"/seg_variance_ensembling_1.nii")
-
-
-
-
     flair_masked = flair_data[case]*(seg_var_ensemble>0).astype(np.int)
     t1_masked = t1_data[case]*(seg_var_ensemble>0).astype(np.int)
     t2_masked = t2_data[case]*(seg_var_ensemble>0).astype(np.int)
     t1ce_masked = t1ce_data[case]*(seg_var_ensemble>0).astype(np.int)
-
-
-    flair_masked_nifti = nib.Nifti1Image(flair_masked, affine, header)
-        #nib.save(flair_masked_nifti, cases[case]+"/flair_masked.nii")
-
-    t1_masked_nifti = nib.Nifti1Image(t1_masked, affine, header)
-        #nib.save(t1_masked_nifti, cases[case]+"/t1_masked.nii")
-
-    t2_masked_nifti = nib.Nifti1Image(t2_masked, affine, header)
-        #nib.save(t2_masked_nifti, cases[case]+"/t2_masked.nii")
-
-    t1ce_masked_nifti = nib.Nifti1Image(t1ce_masked, affine, header)
-        #nib.save(t1ce_masked_nifti, cases[case]+"/t1ce_masked.nii")
-
-
-    #nib.save(seg_nifti,"/media/user/Daten/Brats2018/seg_plain_ensembling_1/"+case_ids[case]+".nii.gz")
-
-    #seg_var_ensemble[seg_var_ensemble == 5] = 0
-    #seg_nifti = nib.Nifti1Image(seg_var_ensemble, affine, header)
-    #nib.save(seg_var_nifti,"/media/user/Daten/Brats2018/seg_variance_ensembling_1/"+case_ids[case]+".nii.gz")
 
 
     case_data = [flair_masked,t1_masked,t2_masked,t1ce_masked]
@@ -1080,6 +1027,4 @@ def infer(flair_filepaths, t1_filepaths, t2_filepaths, t1ce_filepaths):
     if edema_vol == 0:
       seg_var_ensemble = (brain_mask * 2).astype(np.int32)
 
-    seg_nifti = nib.Nifti1Image(seg_var_ensemble, affine, header)
-    return seg_nifti
-    #nib.save(seg_nifti,"/data/results/tumor_DeepSCAN_class.nii.gz")
+    return seg_var_ensemble

@@ -5,6 +5,7 @@ from modelhublib.model import ModelBase
 import model
 from model import UNET_3D_to_2D
 from model import load_checkpoint
+from DeepSCAN_BRATS import segment
 
 class Model(ModelBase):
 
@@ -27,9 +28,12 @@ class Model(ModelBase):
 
     def infer(self, input):
         # load preprocessed input
-        #inputAsNpArr = self._imageProcessor.loadAndPreprocess(input)
-        #TODO for loading: segment needs AT LEAST the affine and the header of the flair modality
-        print('Finished preprocessing')
-        output = segment(input["flair"]["fileurl"], input["t1"]["fileurl"], input["t2"]["fileurl"], input["t1c"]["fileurl"], self._model1 , self._model2)
+        # CAUTION: these custum functions return the complete nib.Nifti1Image! 
+        t1 = self._imageProcessor.loadAndPreprocess(input["t1"]["fileurl"], id="t1")
+        t1c = self._imageProcessor.loadAndPreprocess(input["t1c"]["fileurl"], id="t1c")
+        t2 = self._imageProcessor.loadAndPreprocess(input["t2"]["fileurl"], id="t2")
+        flair = self._imageProcessor.loadAndPreprocess(input["flair"]["fileurl"], id="flair")
+        output = segment(flair, t1, t2, t1c, self._model1 , self._model2)
+        # compute output
         output = self._imageProcessor.computeOutput(output)
         return output

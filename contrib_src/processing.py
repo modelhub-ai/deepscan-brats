@@ -1,4 +1,10 @@
 from modelhublib.processor import ImageProcessorBase
+from modelhublib.imageloaders import PilImageLoader, SitkImageLoader, NumpyImageLoader
+from modelhublib.imageconverters import PilToNumpyConverter, SitkToNumpyConverter, NumpyToNumpyConverter
+from niftiImageLoader import NiftiImageLoader
+from nibImageConverter import NibToNumpyConverter
+
+import nibabel as nib
 import PIL
 import SimpleITK
 import numpy as np
@@ -6,6 +12,11 @@ import json
 
 
 class ImageProcessor(ImageProcessorBase):
+
+    def __init__(self, config):
+        self._config = config
+        self._imageLoader = NiftiImageLoader(self._config)
+        self._imageToNumpyConverter = NibToNumpyConverter()
 
     # OPTIONAL: Use this method to preprocess images using the image objects
     #           they've been loaded into automatically.
@@ -17,6 +28,10 @@ class ImageProcessor(ImageProcessorBase):
             pass
         elif isinstance(image, SimpleITK.Image):
             # TODO: implement preprocessing of SimpleITK image objects
+            pass
+        elif isinstance(image, np.ndarray):
+            pass
+        elif isinstance(image, nib.nifti1.Nifti1Image):
             pass
         else:
             raise IOError("Image Type not supported for preprocessing.")
@@ -31,3 +46,4 @@ class ImageProcessor(ImageProcessorBase):
     def computeOutput(self, inferenceResults):
         # TODO: implement postprocessing of inference results
         return inferenceResults
+
