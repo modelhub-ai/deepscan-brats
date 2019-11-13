@@ -16,7 +16,7 @@
         "email": "richard.mckinley@gmail.com",
         "abstract": "We introduce a new family of classifiers based on our previous DeepSCAN architecture, in which densely connected blocks of dilated convolutions are embedded in a shallow U-net-style structure of down/upsampling and skip connections. These networks are trained using a newly designed loss function which models label noise and uncertainty. We present results on the testing dataset of the Multimodal Brain Tumor Segmentation Challenge 2018.",
         "url": "https://link.springer.com/chapter/10.1007/978-3-030-11726-9_40",
-        "google_scholar": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&as_ylo=2018&q=Ensembles+of+densely-connected+CNNs+with+label-uncertainty+for+brain+tumor+segmentation&btnG=",
+        "google_scholar": "https://scholar.google.com/scholar?cites=9977684363503558221&as_sdt=2005&sciodt=0,5&hl=en",
         "bibtex": "@inproceedings{mckinley2018ensembles,title={Ensembles of densely-connected CNNs with label-uncertainty for brain tumor segmentation},author={McKinley, Richard and Meier, Raphael and Wiest, Roland},booktitle={International MICCAI Brainlesion Workshop},pages={456--465},year={2018},organization={Springer}}"
       },
     "model": {
