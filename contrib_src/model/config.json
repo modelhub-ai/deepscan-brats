@@ -6,7 +6,7 @@
         "task": "Brain Tumor Segmentation",
         "task_extended": "Brain tumor segmentation for the BraTS 18 challenge",
         "data_type": "Nifti-1 volumes",
-        "data_source": "www.braintumorsegmentation.org"
+        "data_source": "http://braintumorsegmentation.org/"
     },
     "publication": {
         "title": "Ensembles of Densely-Connected CNNs with Label-Uncertainty for Brain Tumor Segmentation",
